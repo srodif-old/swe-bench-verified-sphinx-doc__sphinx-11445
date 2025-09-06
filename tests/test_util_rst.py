@@ -78,6 +78,25 @@ def test_prepend_prolog_without_CR(app):
                                       ('dummy.rst', 1, 'Sphinx is a document generator')]
 
 
+def test_prepend_prolog_with_domain_directive_heading(app):
+    # Test that domain directives in headings are not treated as docinfo
+    prolog = '.. |psf| replace:: Python Software Foundation'
+    content = StringList([':mod:`mypackage`',
+                          '=================',
+                          '',
+                          'Content'],
+                         'dummy.rst')
+    prepend_prolog(content, prolog)
+
+    # The domain directive heading should remain intact, with prolog at the beginning
+    assert list(content.xitems()) == [('<rst_prolog>', 0, '.. |psf| replace:: Python Software Foundation'),
+                                      ('<generated>', 0, ''),
+                                      ('dummy.rst', 0, ':mod:`mypackage`'),
+                                      ('dummy.rst', 1, '================='),
+                                      ('dummy.rst', 2, ''),
+                                      ('dummy.rst', 3, 'Content')]
+
+
 def test_textwidth():
     assert textwidth('Hello') == 5
     assert textwidth('русский язык') == 12
